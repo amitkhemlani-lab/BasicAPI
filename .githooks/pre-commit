@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Shared pre-commit hook for the team
+# Reminds developers to use Copilot for review
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(cs|js|ts|py|java)$')
+
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+echo "🤖 GitHub Copilot Pre-Commit Checklist"
+echo "======================================"
+echo ""
+echo "Before committing, ensure you've:"
+echo "  ☐ Reviewed code with Copilot Chat (@workspace /review)"
+echo "  ☐ Checked for security vulnerabilities"
+echo "  ☐ Verified no console.log/debugger statements"
+echo "  ☐ Ensured tests pass"
+echo ""
+
+# Run basic checks
+echo "Running basic checks..."
+
+# Check for debugger statements
+if echo "$STAGED_FILES" | xargs git diff --cached | grep -E '^\+.*debugger' > /dev/null; then
+    echo "⚠️  WARNING: debugger statement found"
+fi
+
+# Check for console.log
+if echo "$STAGED_FILES" | xargs git diff --cached | grep -E '^\+.*console\.(log|debug)' > /dev/null; then
+    echo "⚠️  WARNING: console.log found"
+fi
+
+# Check for TODO/FIXME
+if echo "$STAGED_FILES" | xargs git diff --cached | grep -E '^\+.*(TODO|FIXME)' > /dev/null; then
+    echo "ℹ️  INFO: TODO/FIXME comment found"
+fi
+
+echo ""
+echo "✅ Basic checks complete"
+echo ""
+
+exit 0
