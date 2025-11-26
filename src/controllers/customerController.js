@@ -5,29 +5,16 @@ exports.createCustomer = async (req, res) => {
   try {
     const customer = new Customer(req.body);
     await customer.save();
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
       message: 'Customer created successfully',
       data: customer
     });
   } catch (error) {
-    // Duplicate key (unique index)
-    if (error && error.code === 11000) {
-      const keyVal = error.keyValue || {};
-      const field = Object.keys(keyVal)[0] || 'field';
-      const value = keyVal[field] || '';
-      return res.status(409).json({
-        success: false,
-        message: `${field} '${value}' already exists`
-      });
-    }
-
-    // Mongoose validation error
-    if (error && error.name === 'ValidationError') {
-      return res.status(400).json({ success: false, message: error.message });
-    }
-
-    return res.status(500).json({ success: false, message: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
