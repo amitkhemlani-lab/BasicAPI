@@ -2,7 +2,7 @@ const Customer = require('../models/Customer');
 
 // Create a new customer
 exports.createCustomer = async (req, res) => {
- // try {
+  try {
     const customer = new Customer(req.body);
     await customer.save();
     res.status(201).json({
@@ -10,12 +10,12 @@ exports.createCustomer = async (req, res) => {
       message: 'Customer created successfully',
       data: customer
     });
-  /*} catch (error) {
+  } catch (error) {
     res.status(400).json({
       success: false,
       message: error.message
     });
-  }*/
+  }
 };
 
 // Get all customers
